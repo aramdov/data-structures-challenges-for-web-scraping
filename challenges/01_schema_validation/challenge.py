@@ -49,32 +49,12 @@ class SchemaValidator:
         Raises:
             ValidationError: If any field fails validation
         """
-        if not isinstance(data, dict):
-            raise ValidationError("root", "Input must be a dictionary", data)
-            
-        result = {}
-        for field_name, expected_type in schema.items():
-            # Alternative for handling missing `field_name` in `data` is to use `data.get(field_name)`
-            # With `data.get(field_name)`, we can provide a default value if `field_name` is missing
-            # Default value can be `None` or any other value. 
-            # For example, `data.get(field_name, 'default_value')`
-            if field_name not in data:
-                raise ValidationError(
-                    field_name,
-                    f"Required field '{field_name}' is missing",
-                    None
-                )
-            
-            try:
-                result[field_name] = self._coerce_value(
-                    data[field_name], 
-                    expected_type,
-                    field_name
-                )
-            except ValidationError as e:
-                raise ValidationError(e.path, e.message, e.value)
-                
-        return result
+        # TODO: Implement validation logic
+        # 1. Check if input is a dictionary
+        # 2. Iterate through schema fields
+        # 3. Validate presence of required fields
+        # 4. Convert values to expected types
+        raise NotImplementedError("Implement the validate method")
     
     def _coerce_value(self, value: Any, target_type: Type, path: str) -> Any:
         """Attempts to convert a value to the target type.
@@ -90,79 +70,21 @@ class SchemaValidator:
         Raises:
             ValidationError: If the value cannot be converted
         """
-        if value is None:
-            raise ValidationError(path, "Value cannot be None", value)
-            
-        if isinstance(value, target_type):
-            return value
-            
-        try:
-            # Handle boolean special case
-            if target_type == bool:
-                if isinstance(value, str):
-                    value = value.lower()
-                    if value in ('true', '1', 'yes'):
-                        return True
-                    if value in ('false', '0', 'no'):
-                        return False
-                raise ValidationError(
-                    path,
-                    f"Cannot convert '{value}' to boolean",
-                    value
-                )
-                
-            # Handle list special case
-            if target_type == list:
-                if isinstance(value, str):
-                    # Handle empty string case
-                    if not value:
-                        return []
-                    # Assume comma-separated string
-                    return [v.strip() for v in value.split(',')]
-                if hasattr(value, '__iter__') and not isinstance(value, str):
-                    return list(value)
-                raise ValidationError(
-                    path,
-                    f"Cannot convert '{value}' to list",
-                    value
-                )
-                
-            # Handle numeric types
-            if target_type in (int, float):
-                try:
-                    return target_type(value)
-                except (ValueError, TypeError):
-                    raise ValidationError(
-                        path,
-                        f"Cannot convert '{value}' to {target_type.__name__}",
-                        value
-                    )
-                    
-            # Handle strings
-            if target_type == str:
-                return str(value)
-                
-            raise ValidationError(
-                path,
-                f"Unsupported type conversion to {target_type.__name__}",
-                value
-            )
-            
-        except ValidationError:
-            raise
-        except Exception as e:
-            raise ValidationError(
-                path,
-                f"Unexpected error during conversion: {str(e)}",
-                value
-            )
+        # TODO: Implement type coercion logic
+        # 1. Handle None values
+        # 2. Handle values already of correct type
+        # 3. Implement conversion logic for:
+        #    - Strings to numbers (int, float)
+        #    - Strings to booleans ('true'/'false', '1'/'0', 'yes'/'no')
+        #    - Strings to lists (comma-separated)
+        raise NotImplementedError("Implement the _coerce_value method")
 
 
 def example_usage():
     """Demonstrates how to use the SchemaValidator class."""
     validator = SchemaValidator()
     
-    # Example 1: Basic type conversion
+    # Example: Basic type conversion
     data = {
         'user_id': '123',         # Should convert to int
         'active': 'true',         # Should convert to bool
